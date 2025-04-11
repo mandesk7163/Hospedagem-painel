@@ -1,95 +1,41 @@
+
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hospedagem de Bot</title>
+  <meta charset="UTF-8">
+  <title>GrumechospedaGRM</title>
   <style>
-    body {
-      background-color: #2c2c2c;
-      color: white;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .button {
-      background-color: red;
-      color: white;
-      border: none;
-      padding: 1rem 2rem;
-      font-size: 1.2rem;
-      cursor: pointer;
-      border-radius: 10px;
-      margin-top: 20px;
-    }
-    #panel {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 20px;
-      gap: 10px;
-    }
-    input[type="text"], input[type="file"] {
-      padding: 0.5rem;
-      border-radius: 5px;
-      border: none;
-      width: 250px;
-    }
-    #output {
-      margin-top: 20px;
-      color: lightgreen;
-    }
+    body { background: #121212; color: white; font-family: Arial; text-align: center; padding-top: 50px; }
+    input, button { padding: 10px; margin: 10px; border: none; border-radius: 5px; }
+    input { width: 300px; }
+    button { background-color: #5865F2; color: white; cursor: pointer; }
   </style>
 </head>
 <body>
-  <h1>Hospedagem de Bot</h1>
-  <button class="button" onclick="abrirPainel()">Hospedagem</button>
-  <div id="panel">
-    <input type="text" id="token" placeholder="Digite o token do bot" />
-    <button class="button" onclick="hospedarBot()">Hospedar Bot</button>
-    <input type="file" id="pythonFile" accept=".py" />
-    <div id="output"></div>
-  </div>
+  <h1>GrumechospedaGRM</h1>
+  <p id="user"></p>
+  <input type="text" id="token" placeholder="Insira o Token do Bot" />
+  <br>
+  <button onclick="startBot()">Iniciar Bot</button>
+  <p id="resposta"></p>
   <script>
-    function abrirPainel() {
-      document.getElementById('panel').style.display = 'flex';
-    }
+    async function startBot() {
+      const token = document.getElementById("token").value;
+      const resposta = document.getElementById("resposta");
+      if (!token) return alert("Token obrigatório");
 
-    function hospedarBot() {
-      const token = document.getElementById('token').value;
-      const file = document.getElementById('pythonFile').files[0];
-
-      if (!token) {
-        alert("Por favor, insira o token do bot.");
-        return;
-      }
-
-      let botName = token.slice(0, 5) + "..."; // Apenas simulação de nome do bot
-
-      // Enviar webhook
-      fetch('https://discord.com/api/webhooks/1358857889514520837/fIkagwdsYr6DP0VxPeWEJKta7bJqyYbKSMwCIqxvQFqthfO29U9IuasC231xna6Ekxyh, {
+      const res = await fetch('/start-bot', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          embeds: [
-            {
-              title: "Bot Hospedado",
-              description: `O bot **${botName}** foi hospedado com sucesso!`,
-              color: 3066993
-            }
-          ]
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
       });
-
-      let output = document.getElementById('output');
-      output.innerHTML = "<strong style='color: lightgreen;'>Seu bot foi hospedado com sucesso!</strong>";
+      const data = await res.text();
+      resposta.innerText = data;
     }
+
+    fetch("/me").then(res => res.json()).then(data => {
+      document.getElementById("user").innerText = "Logado como: " + data.username;
+    });
   </script>
 </body>
 </html>
